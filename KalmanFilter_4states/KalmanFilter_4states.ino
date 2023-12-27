@@ -183,8 +183,7 @@ void setup() {
   pinMode(dirPin, OUTPUT);
 
   //PWM Pin
-  // ledcAttachPin(pwmPin, PWM1_Ch);
-  // ledcSetup(PWM1_Ch, PWM1_Freq, PWM1_Res);
+  ledcAttach(pwmPin, PWM1_Freq, PWM1_Res);
 }
 
 void loop() {
@@ -265,7 +264,7 @@ void setmotor_sinwave() {
 }
 
 void setmotor(int dutyCycle, int In_dir) {
-  ledcWrite(PWM1_Ch, dutyCycle);
+  ledcWrite(pwmPin, dutyCycle);
   digitalWrite(dirPin, In_dir);
 }
 
@@ -279,6 +278,8 @@ int AS5600_Unwrap(int rawAngle) {
   rawAngle_prev = rawAngle;
   return count * 4096 + rawAngle;
 }
+
+
 
 // void Update_Command(int Raw_dutyCycle) {
 //   float Vin = Raw_dutyCycle * 18 / 100.0;  // 14 Bits (16383)
