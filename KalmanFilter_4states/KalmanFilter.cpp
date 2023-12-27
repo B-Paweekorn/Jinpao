@@ -8,12 +8,12 @@
 #include <KalmanFilter.h>
 
 kalman_filter::kalman_filter() {
-	matrix buf1(3, 1);
+	matrix buf1(4, 1);
 	predictX_old = buf1;
-	matrix buf2(3, 3);
+	matrix buf2(4, 4);
 	P_old = buf2;
-	float buf_val[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
-	matrix buf3(3, 3, buf_val);
+	float buf_val[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+	matrix buf3(4, 4, buf_val);
 	I33=buf3;
 }
 
@@ -86,4 +86,8 @@ matrix buf = D*U;
 resultY = (C*predictX)+buf;
 //resultY = (C*predictX)+(D*U);
 resultX = predictX;
+}
+
+void kalman_filter::EstimateSpeed(int32_t measurePulse, float Vin){
+  
 }

@@ -1,3 +1,4 @@
+#include <stdint.h>
 /*
  * kalmanfilter.h
  *
@@ -29,6 +30,7 @@ public:
 	void run(matrix u, matrix y);
 	void setAtoD(matrix a_in, matrix b_in, matrix c_in, matrix d_in);
 	void setQGR(matrix q_in, matrix g_in, matrix r_in);
+  void EstimateSpeed(int32_t measurePulse, float Vin);
 };
 
 #endif /* INC_KALMANFILTER_H_ */
