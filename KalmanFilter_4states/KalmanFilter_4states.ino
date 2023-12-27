@@ -16,14 +16,15 @@ float dutyCycle;
 /* PREPARE kalman filter BEGIN*/
 
 // declare kalman filter instance
-kalman_filter KF();
+kalman_filter KF;
 //known input
 float U_data[1] = {0.0};
-matrix U_MATRIX(1, 1, &U_data);
+matrix U_MATRIX(1, 1, U_data);
 // Y measurement
 float Ymeas_data[1] = {0.0};
 matrix Ymeas_MATRIX(1, 1, Ymeas_data);
-
+//output
+matrix KF_output(3, 1);
 /* PREPARE kalman filter END*/
 
 //------------------------------------
@@ -137,45 +138,46 @@ void setup() {
   // K.Q = { m_p * m_p, 0.0, 0.0,
   //       0.0, m_v * m_v, 0.0,
   //       0.0, 0.0, m_i * m_i };
-
+  /*kalman filter INITIAL BEGIN*/
   // state trnsition matrix
   float A_data[9]  = { 1.0, 9.945211490311812E-4, 4.075838177204351E-6,
                         0.0, 0.98685183868228, 0.005453127455664,
                         0.0, -0.79388648772862, 0.027207395024798 };
-  matrix A_MATRIX(3, 3, &A_data);
+  matrix A_MATRIX(3, 3, A_data);
 
   //input matrix
   float B_data[3]  = { 9.012107076660543E-06,
                            0.022191093685438, 
                            1.509516246505134};
-  matrix B_MATRIX(3, 1, &B_data);
+  matrix B_MATRIX(3, 1, B_data);
 
   // observation matrix
   float C_data[3] = { 1.0, 0.0, 0.0};
-  matrix C_MATRIX(1, 3, &C_data);
+  matrix C_MATRIX(1, 3, C_data);
 
   //D matrix
-  matrix D_MATRIX(3, 1)
+  matrix D_MATRIX(3, 1);
 
   // measurement covariance matrix
   float R_data[1] = { n_p * n_p};
-  matrix R_MATRIX(1, 1, &R_data);
+  matrix R_MATRIX(1, 1, R_data);
 
   // Process noise covariance matrix
   float G_data[3] = {0.0, 1.0, 0.0};
-  matrix G_MATRIX(3, 1, &G_data);
+  matrix G_MATRIX(3, 1, G_data);
   // float Q_data[9] = { m_p * m_p, 0.0, 0.0,
   //                         0.0, m_v * m_v, 0.0,
   //                         0.0, 0.0, m_i * m_i };
   // matrix Q_MATRIX(3, 3, &Q_data);
 
   //process model variance vaule
-  float Q_data[1] = {0.01}; //assign Q here
+  float Q_data[1] = {0.01}; //assign Q here<-------------
   matrix Q_MATRIX(1, 1, Q_data);
 
   //kalman filter matrix set up
   KF.setAtoD(A_MATRIX, B_MATRIX, C_MATRIX, D_MATRIX);
   KF.setQGR(Q_MATRIX, G_MATRIX, R_MATRIX);
+  /*kalman filter INITIAL END*/
 
   //Direction Pin
   pinMode(dirPin, OUTPUT);
@@ -198,10 +200,13 @@ void loop() {
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
-    U_MATRIX.read(&newU);
-    Ymeas_MATRIX.read(&newYmeas);
-    U_MATRIX.read(&newU);
+
+    float newU[1] = {0};
+    float newYmeas[1] = {0};
+    U_MATRIX.read(newU);
+    Ymeas_MATRIX.read(newYmeas);
     KF.run(U_MATRIX,Ymeas_MATRIX);
+    KF_output = KF.resultX;
 
     // Serial.print(15000);
     // Serial.print(" ");
