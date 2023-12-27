@@ -9,11 +9,22 @@ AS5600 as5600;  //  use default Wire
 #include "Matrix.h"
 #include "KalmanFilter.h"
 /* USER CODE END Includes */
+
 float frequency;
 float dutyCycle;
 
+/* PREPARE kalman filter BEGIN*/
+
 // declare kalman filter instance
 kalman_filter KF();
+//known input
+float U_data[1] = {0.0};
+matrix U_MATRIX(1, 1, &U_data);
+// Y measurement
+float Ymeas_data[1] = {0.0};
+matrix Ymeas_MATRIX(1, 1, Ymeas_data);
+
+/* PREPARE kalman filter END*/
 
 //------------------------------------
 /****  MICROCONTROLLER SETUP  ****/
@@ -126,6 +137,7 @@ void setup() {
   // K.Q = { m_p * m_p, 0.0, 0.0,
   //       0.0, m_v * m_v, 0.0,
   //       0.0, 0.0, m_i * m_i };
+
   // state trnsition matrix
   float A_data[9]  = { 1.0, 9.945211490311812E-4, 4.075838177204351E-6,
                         0.0, 0.98685183868228, 0.005453127455664,
@@ -141,7 +153,7 @@ void setup() {
   // observation matrix
   float C_data[3] = { 1.0, 0.0, 0.0};
   matrix C_MATRIX(1, 3, &C_data);
-  
+
   //D matrix
   matrix D_MATRIX(3, 1)
 
@@ -150,12 +162,21 @@ void setup() {
   matrix R_MATRIX(1, 1, &R_data);
 
   // Process noise covariance matrix
-  float Q_data[9] = { m_p * m_p, 0.0, 0.0,
-                          0.0, m_v * m_v, 0.0,
-                          0.0, 0.0, m_i * m_i };
-  matrix Q_MATRIX(3, 3, &Q_data);
+  float G_data[3] = {0.0, 1.0, 0.0};
+  matrix G_MATRIX(3, 1, &G_data);
+  // float Q_data[9] = { m_p * m_p, 0.0, 0.0,
+  //                         0.0, m_v * m_v, 0.0,
+  //                         0.0, 0.0, m_i * m_i };
+  // matrix Q_MATRIX(3, 3, &Q_data);
+
+  //process model variance vaule
+  float Q_data[1] = {0.01}; //assign Q here
+  matrix Q_MATRIX(1, 1, Q_data);
+
   //kalman filter matrix set up
-  KF.setAtoD(A_MATRIX, B_MATRIX, C_MATRIX, )
+  KF.setAtoD(A_MATRIX, B_MATRIX, C_MATRIX, D_MATRIX);
+  KF.setQGR(Q_MATRIX, G_MATRIX, R_MATRIX);
+
   //Direction Pin
   pinMode(dirPin, OUTPUT);
 
@@ -177,6 +198,10 @@ void loop() {
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
+    U_MATRIX.read(&newU);
+    Ymeas_MATRIX.read(&newYmeas);
+    U_MATRIX.read(&newU);
+    KF.run(U_MATRIX,Ymeas_MATRIX);
 
     // Serial.print(15000);
     // Serial.print(" ");
