@@ -1,0 +1,6 @@
+Main program is linetrack_test.py
+
+Description of each function is in program already
+Change if it needs
+
+Try venv if the library did not work
