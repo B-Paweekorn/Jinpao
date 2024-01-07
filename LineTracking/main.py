@@ -1,12 +1,20 @@
 from lineTrackingFunction import *
+import json
+
+def read_config(file_path):
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+    return config
+
+config_path = 'setting.json'
+config = read_config(config_path)
 
 print("Setup camera in progress...")
 cap = LinetrackCam_Open()
 print("Finished setup camera")
 
 print("Start setup other params")
-# pid params
-kp, ki, kd = 0.25 , 0, 0
+kp, ki, kd = config["mainPID"][0]["kp"], config["mainPID"][0]["ki"], config["mainPID"][0]["kd"]
 print("Finished  other params")
 
 print("Start Main program")
@@ -17,7 +25,6 @@ print("Start Main program")
 #TrackLineTillTurn_Time(cap, kp, ki, kd, xxx) LineTracking Till meet a certain time
 #MoveTime(x,x,x,xxx) Move in each direction Vx Vy Wz and Duration (Vx Vy in m/s Wz in rad/s)
 #Tuning(cap, kp, ki, kd) Make robot vertical align to line
-
 
 #01
 TrackLineTillTurn_Time(cap, kp, ki, kd, 9500)
