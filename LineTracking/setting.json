@@ -1,0 +1,46 @@
+{
+    "serial": [
+        {
+            "port": "COM18",
+            "baudrate": 250000,
+            "timeout": 0.01
+        }
+    ],
+    "BASE": [
+        {
+            "wheel_diameter": 0.058,
+            "lx": 0.15,
+            "ly": 0.15
+        }
+    ],
+    "speed": [
+        {
+            "base_speed": 50,
+            "max_speed": 90
+        }
+    ],
+    "cameraLine": [
+        {
+            "x1": 80,
+            "x2": 360,
+            "x3": 160,
+            "x4": 480
+        }
+    ],
+    "Tuning": {
+        "Wz": [
+            {
+                "kp": 0.5,
+                "ki": 0.0001,
+                "kd": 0
+            }
+        ],
+        "Vy": [
+            {
+                "kp": 0.5,
+                "ki": 0.0001,
+                "kd": 0
+            }
+        ]
+    }
+}

@@ -1,11 +1,13 @@
-from function import *
+from lineTrackingFunction import *
 
-print("Setup")
+print("Setup camera in progress...")
 cap = LinetrackCam_Open()
 print("Finished setup camera")
 
+print("Start setup other params")
 # pid params
 kp, ki, kd = 0.25 , 0, 0
+print("Finished  other params")
 
 print("Start Main program")
 
@@ -26,7 +28,7 @@ TrackLineTillTurn(cap, kp, ki, kd)
 TrackLineTillTurn_Time(cap, kp, ki, kd, 1350)
 MoveTime(0, 0, -3.14, 1400)
 TrackLineTillTurn_Time(cap, kp, ki, kd, 3000)
-Tuning(cap, kp, ki, kd)
+Tuning(cap)
 
 time.sleep(2)
 
@@ -35,7 +37,7 @@ MoveTime(-0.2,0,0,800)
 MoveTime(0, 0, 3.14, 1400)
 TrackLineTillTurn(cap, kp, ki, kd)
 TrackLineTillTurn_Time(cap, kp, ki, kd, 4500)
-Tuning(cap, kp, ki, kd)
+Tuning(cap)
 
 time.sleep(2)
 
@@ -46,7 +48,7 @@ TrackLineTillTurn(cap, kp, ki, kd,2)
 TrackLineTillTurn_Time(cap, kp, ki, kd, 1350)
 MoveTime(0, 0, 3.14, 1400)
 TrackLineTillTurn_Time(cap, kp, ki, kd, 1000)
-Tuning(cap, kp, ki, kd)
+Tuning(cap)
 
 #test slip from 1 to 3
 # MoveTime(0,0.3,0,4000)

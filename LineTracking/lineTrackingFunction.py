@@ -2,10 +2,19 @@ import math
 import serial
 import time
 import cv2
-from cam_func import *
-import cam_func
+from cameraFunction import *
+import cameraFunction
+import json
 
-arduino = serial.Serial(port="COM18", baudrate=250000, timeout=0.01)
+def read_config(file_path):
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+    return config
+
+config_path = 'setting.json'
+config = read_config(config_path)
+
+arduino = serial.Serial(port=config['serial'][0]['port'], baudrate=config['serial'][1]['baudrate'], timeout=config['serial'][2]['timeout'])
 
 def send_motor_speed(x, y, z):
     command = f"{x:.2f};{y:.2f};{z:.2f}\n"
@@ -14,7 +23,7 @@ def send_motor_speed(x, y, z):
     return data
 
 class BASE:
-    def __init__(self, base_speed, max_speed, wheel_diameter = 0.058,lx = 0.15,ly = 0.15):
+    def __init__(self, base_speed, max_speed, wheel_diameter, lx, ly):
         self.vx = 0
         self.vy = 0
         self.wz = 0
@@ -177,8 +186,8 @@ class CHECK_STATE:
         return False
 
 # base params
-base_speed, max_speed = 50 , 90  # in rpms
-base = BASE(base_speed = base_speed, max_speed = max_speed)
+base_speed, max_speed = config["speed"][0]["base_speed"] , config["speed"][0]["max_speed"]  # in rpms
+base = base_instance = BASE(base_speed, max_speed, config["BASE"][0]['wheel_diameter'], config["BASE"][0]['lx'], config["BASE"][0]['ly'])
 
 # Track function 
 def TrackLineTillTurn(cap, kp, ki, kd):
@@ -198,7 +207,7 @@ def TrackLineTillTurn(cap, kp, ki, kd):
 
         binary_image = BGR2BIN(frame, threshold=65)
 
-        x1, x2, y1, y2 = 80, 360, 160, 480
+        x1, x2, y1, y2 = config["cameraLine"][0]["x1"], config["cameraLine"][0]["x2"], config["cameraLine"][0]["y1"], config["cameraLine"][0]["y2"]
 
         # Use this Value format -> 'xxx:xxxxxxxx'
         line1 = horizontal(x1, binary_image)
@@ -242,7 +251,7 @@ def TrackLineTillTurn_Time(cap, kp, ki, kd, milisec):
 
         binary_image = BGR2BIN(frame, threshold=95)
 
-        x1, x2, y1, y2 = 80, 360, 160, 480
+        x1, x2, y1, y2 = config["cameraLine"][0]["x1"], config["cameraLine"][0]["x2"], config["cameraLine"][0]["y1"], config["cameraLine"][0]["y2"]
 
         DisplayCam(x1,x2,y1,y2,frame)
 
@@ -315,14 +324,15 @@ def DisplayCam(x1,x2,y1,y2,frame):
     )
     cv2.imshow("Camera", frame)
 
-def Tuning(cap, kp, ki, kd):
-    Wz_pid = PID(kp = 0.5,
-            ki = 0.0001,
-            kd = kd,
+def Tuning(cap):
+    Wz_pid = PID(kp = config['Tuning']['Wz'][0]['kp'],
+            ki = config['Tuning']['Wz'][0]['ki'],
+            kd = config['Tuning']['Wz'][0]['kd'],
             max_speed = max_speed)
-    Vy_pid = PID(kp = 0.5,
-            ki = 0.0001,
-            kd = kd,
+    
+    Vy_pid = PID(kp = config['Tuning']['Wz'][0]['kp'],
+            ki = config['Tuning']['Wz'][0]['ki'],
+            kd = config['Tuning']['Wz'][0]['kd'],
             max_speed = max_speed)
 
     while True:
@@ -334,7 +344,7 @@ def Tuning(cap, kp, ki, kd):
 
         binary_image = BGR2BIN(frame, threshold=65)
 
-        x1, x2, y1, y2 = 80, 360, 160, 480
+        x1, x2, y1, y2 = config["cameraLine"][0]["x1"], config["cameraLine"][0]["x2"], config["cameraLine"][0]["y1"], config["cameraLine"][0]["y2"]
 
         # Use this Value format -> 'xxx:xxxxxxxx'
         line1 = horizontal(x1, binary_image)
@@ -355,6 +365,7 @@ def Tuning(cap, kp, ki, kd):
 
         base.send_motor_speed_rpm(0,Vy_pid_output,-Wz_pid_output)
 
+        #Death zone
         if(abs(Vy_pid_output) < 4 and abs(Wz_pid_output) < 10):
             break
         
