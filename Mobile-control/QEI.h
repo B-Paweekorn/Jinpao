@@ -10,7 +10,7 @@ private:
 
   int encA_pin;
   int encB_pin;
-  int pcnt_limit = 32767;
+  int pcnt_limit = 32767; 
   uint32_t filter_ns = 0;
 
   int pulse_count = 0;

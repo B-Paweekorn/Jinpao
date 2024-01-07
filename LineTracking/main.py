@@ -62,3 +62,5 @@ Tuning(cap)
 # Tuning(cap, kp, ki, kd)
 # MoveTime(0,0.2,0,2200)
 # Tuning(cap, kp, ki, kd)
+
+print(send_motor_speed(1,1,0))

@@ -9,7 +9,7 @@
     "serial": [
         {
             "port": "COM18",
-            "baudrate": 250000,
+            "baudrate": 115200,
             "timeout": 0.01
         }
     ],

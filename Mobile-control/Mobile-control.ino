@@ -76,11 +76,12 @@ PID* pids[4] = { &pid1, &pid2, &pid3, &pid4 };
 
 Mobile_command Mobile(motors, encoders, pids, &kinematics);
 
-
+int commaIndex1, commaIndex2;
+String speedX, speedY, speedZ;
 
 void setup() {
   Serial.begin(115200);
-
+  Serial.setTimeout(1);
   /*-----Setup Hardware Start-----*/
 
   MOTOR_1.begin();
@@ -124,15 +125,36 @@ void loop() {
 
   uint32_t dt = micros() - time;
 
-  // Serial.print(dt);
-  // Serial.print(' ');
-  // Serial.print(counter0);
-  // Serial.print(' ');
-  // Serial.print(counter1);
-  // Serial.print(' ');
-  // Serial.print(counter2);
-  // Serial.print(' ');
-  // Serial.println(counter3);
+  Serial.print(dt);
+  Serial.print(' ');
+  Serial.print(counter0);
+  Serial.print(' ');
+  Serial.print(counter1);
+  Serial.print(' ');
+  Serial.print(counter2);
+  Serial.print(' ');
+  Serial.println(counter3);
+
+  //Receive Data
+  if (Serial.available()) {
+    String data = Serial.readStringUntil('\n');
+    // Serial.print("Received data: ");
+    // Serial.println(data);
+
+    int firstSemiColon = data.indexOf(';');
+    int secondSemiColon = data.indexOf(';', firstSemiColon + 1);
+
+    speedX = data.substring(0, firstSemiColon);
+    speedY = data.substring(firstSemiColon + 1, secondSemiColon);
+    speedZ = data.substring(secondSemiColon + 1);
+
+    Serial.print("Parsed X: ");
+    Serial.print(strToFloat(speedX));
+    Serial.print(" Y: ");
+    Serial.print(strToFloat(speedY));
+    Serial.print(" Z: ");
+    Serial.println(strToFloat(speedZ));
+  }
 }
 
 void test() {
