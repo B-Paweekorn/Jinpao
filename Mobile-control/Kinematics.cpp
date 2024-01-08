@@ -18,10 +18,10 @@ Kinematics::Velocity Kinematics::Forward_Kinematics_Velocity(float radps_fl, flo
 
 Kinematics::RadPS Kinematics::Inverse_Kinematics(float vx, float vy, float wz) {
   RadPS wheel_rads;
-  wheel_rads.radps_fl = (vx + vy + (robot.lx + robot.ly) * wz);
-  wheel_rads.radps_fr = (vx - vy - (robot.lx + robot.ly) * wz);
-  wheel_rads.radps_bl = (vx - vy + (robot.lx + robot.ly) * wz);
-  wheel_rads.radps_br = (vx + vy - (robot.lx + robot.ly) * wz);
+  wheel_rads.radps_fl = (vx + vy + (robot.lx + robot.ly) * wz)/((robot.wheel_diameter)/2);
+  wheel_rads.radps_fr = (vx - vy - (robot.lx + robot.ly) * wz)/((robot.wheel_diameter)/2);
+  wheel_rads.radps_bl = (vx - vy + (robot.lx + robot.ly) * wz)/((robot.wheel_diameter)/2);
+  wheel_rads.radps_br = (vx + vy - (robot.lx + robot.ly) * wz)/((robot.wheel_diameter)/2);
 
 
   return wheel_rads;
