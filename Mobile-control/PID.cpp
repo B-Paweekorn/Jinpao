@@ -69,7 +69,7 @@ void PID::compute() {
   Vin = u_out / 16383.0 * 18;
   estimateState = kf->EstimateSpeed(q, Vin);
   
-  // v = kf->EstimateSpeed(pos , u);
+  //v = kf->EstimateSpeed(q, Vin);
 
   float omega = targetRads;  // Replace with actual value
   v = estimateState[1];

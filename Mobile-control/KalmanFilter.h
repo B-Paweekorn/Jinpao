@@ -62,6 +62,7 @@ public:
   void doResult();
   void run();
   float *EstimateSpeed(double _measureRad, float Vin);
+  //float EstimateSpeed(double _measureRad, float Vin);
 };
 
 #endif /* INC_KALMANFILTER_H_ */

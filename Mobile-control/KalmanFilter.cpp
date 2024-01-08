@@ -128,6 +128,32 @@ void KalmanFilter::doResult() {
   resultX = predictX;
 }
 
+// float KalmanFilter::EstimateSpeed(double _measureRad, float Vin) {
+
+//   //Update Observer and Command
+//   measureRad = _measureRad;
+//   updated_U[0] = Vin;
+//   updated_Ymeas[0] = measureRad;
+//   U.read(updated_U);
+//   Y.read(updated_Ymeas);
+
+//   //Kalmanfilter
+//   run();
+
+
+
+//   //Estimate Velocity
+//   // estimateVel = resultX.data[1][0];
+
+//   //Estimate State
+//   estimateState[0] = resultX.data[0][0];
+//   estimateState[1] = resultX.data[1][0];
+//   estimateState[2] = resultX.data[2][0];
+//   estimateState[3] = resultX.data[3][0];
+
+//   return estimateState;
+// }
+
 float *KalmanFilter::EstimateSpeed(double _measureRad, float Vin) {
 
   //Update Observer and Command
