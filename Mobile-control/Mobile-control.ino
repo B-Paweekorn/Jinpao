@@ -127,13 +127,39 @@ float u_volt;
 
 float set_point = 0;
 
-struct RadPs {
-  float radps_fl;
-  float radps_fr;
-  float radps_bl;
-  float radps_br;
+struct ControlCmd {
+  int param1;
+  int param2;
+  int param3;
+  unsigned long duration;  // Duration in milliseconds
 };
-struct RadPs wheel_radps;
+
+void runCtrlSeq(ControlCmd cmds[], int numCmds) {
+  static int cmdIndex = 0;
+  static unsigned long startTime = 0;
+  unsigned long current_timestep = micros();
+
+  if (cmdIndex < numCmds) {
+    if (current_timestep - startTime > cmds[cmdIndex].duration * 1000) {
+      // Move to next command
+      cmdIndex++;
+      startTime = current_timestep;
+    }
+
+    if (cmdIndex < numCmds) {
+      // Execute current command
+      Mobile.control(cmds[cmdIndex].param1,
+                     cmds[cmdIndex].param2,
+                     cmds[cmdIndex].param3);
+    }
+  }
+}
+
+ControlCmd commandSeq[] = {
+  { 1, 0, 0, 5000 },   // Command for 5 seconds
+  { 2, 0, 0, 10000 },  // Command for 10 seconds
+                       // Add more commands as needed
+};
 void setup() {
   Serial.begin(230400);
 
@@ -209,7 +235,7 @@ void loop() {
     // Serial.print(" ");
     // Serial.println(qd4);
 
-    // wheel_radps = kinematics.Inverse_Kinematics(,0,0);
+    // Kinematics::RadPS wheel_radps = kinematics.Inverse_Kinematics(,0,0);
     // Serial.print(wheel_radps.radps_fl);
     // Serial.print(" ");
     // Serial.print(wheel_radps.radps_fr);
@@ -268,7 +294,9 @@ void loop() {
     // dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
     // float u = dummy_sinwave;
     // float Vin = u * 18.0 / 16383;
-    Mobile.control(1, 0, 0);
+    //Mobile.control(1, 0, 0);
+    runCtrlSeq(commandSeq, sizeof(commandSeq) / sizeof(ControlCmd));
+
     // pid1.setRads(15);
     // pid2.setRads(15);
     // pid3.setRads(15);
