@@ -34,21 +34,18 @@ void Motor::cascade(float estimateVel){
     
     float pwm_velocity = (0.0039*v*v) - (0.1566*v);
     // Compute the control signal u
-    float kp_velocity = 20;
-    float ki_velocity = 0.5;
+    float kp_velocity = 1000;
+    float ki_velocity = 0;
     float e_velocity = v - estimateVel; 
   
     eintegral_velocity = eintegral_velocity + e_velocity * deltaT;
     u_velocity = kp_velocity * e_velocity + ki_velocity * eintegral_velocity;    // Compute the control signal u
-      
-    int dir_velocity = 1;
-    if (pwm_velocity+u_velocity < 0){
-      dir_velocity = -1;
+
+    if(u_velocity > 16383){
+      u_velocity = 16383;
     }
-    
-    float pwr_velocity = fabs(pwm_velocity + u_velocity);
-    if (pwr_velocity > 255){
-      pwr_velocity = 255;
+    else if(u_velocity < -16383) {
+      u_velocity = -16383;
     }
     //setmotor(dir_velocity,pwr_velocity,pwm,in2,in1);
     
@@ -58,9 +55,9 @@ void Motor::cascade(float estimateVel){
     // pos_position = (cnt*(360.0/3072.0));
     // interrupts();
     
-    float kp_position = 10.; // 6 0.1 0.09
-    float kd_position = 0.1;
-    float ki_position = 0.5;
+    float kp_position = 0.; // 6 0.1 0.09
+    float kd_position = 0;
+    float ki_position = 0;
   
     float e_position = posit - 0;
     float dedt_position = (e_position-eprev_position)/deltaT;

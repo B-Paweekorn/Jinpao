@@ -128,6 +128,7 @@ float v_est;
 float u_volt;
 
 float set_point = 0;
+float Vin;
 
 struct RadPs {
   float radps_fl;
@@ -173,7 +174,7 @@ void setup() {
 //Generate Sinwave
 float dummy_sinwave = 0;
 #define SIMUL_PERIOD 1     // oscillating period [s]
-#define SIMUL_AMP 16383.0  // oscillation amplitude
+#define SIMUL_AMP 49.0  // oscillation amplitude 16383.0
 
 float *kf1_ptr;
 float *kf2_ptr;
@@ -198,13 +199,13 @@ void loop() {
   if (current_timestep_print - timestamp_print > timestep_print) {
     // Serial.print(current_timestep_print - timestamp_print);
     // Serial.print(" ");
-    // Serial.print(90);
-    // Serial.print(" ");
-    // Serial.print(70);
-    // Serial.print(" ");
-    // Serial.print((q - q_prev) * 100);
-    // Serial.print(" ");
-    // Serial.println(v_est);
+    Serial.print(m1.v);
+    Serial.print(" ");
+    Serial.print(q);
+    Serial.print(" ");
+    Serial.print((q - q_prev) * 100);
+    Serial.print(" ");
+    Serial.println(v_est);
     q_prev = q;
     timestamp_print = micros();
     set_point = 20 * sin(2 * M_PI * 0.1 * micros() / 1.0e6);
@@ -285,22 +286,22 @@ void loop() {
 
     tcur++;
     dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
-    float u = dummy_sinwave;
-    float Vin = u * 18.0 / 16383;
+    // float u = dummy_sinwave;
+    // Vin = u * 18.0 / 16383;
 
-    Serial.println(Vin);
+    m1.v = dummy_sinwave;
 
     float dq = (enc1.get_diff_count() * 2 * M_PI) / counts_per_rev;
     q += dq;
     m1.pos = q;
 
-    kf1_ptr = kf1.EstimateSpeed(q, Vin);
+    kf1_ptr = kf1.EstimateSpeed(q, 18);//Vin
 
     v_est = kf1_ptr[1];
 
-    // m1.cascade(v_est);
+    m1.cascade(v_est);
 
-    MOTOR_1.setPWM(u);
+    MOTOR_1.setPWM(m1.u_velocity); //u
 
     
     // if(flag == 0){
