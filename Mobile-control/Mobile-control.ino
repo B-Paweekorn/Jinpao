@@ -199,7 +199,7 @@ void loop() {
     timestamp_print = micros();
     set_point = 20 * sin(2 * M_PI * 0.1 * micros() / 1.0e6);
 
-    // Serial.print(i1);
+    Serial.println(enc1.get_diff_count());
     // Serial.print(" ");
     // Serial.print(i2);
     // Serial.print(" ");
@@ -230,13 +230,13 @@ void loop() {
     // Serial.print(pid2.i);
     // Serial.print(" ");
 
-    Serial.print(pid1.v);
-    Serial.print(" ");
-    Serial.print(pid2.v);
-    Serial.print(" ");
-    Serial.print(pid3.v);
-    Serial.print(" ");
-    Serial.println(pid4.v);
+    // Serial.print(pid1.v);
+    // Serial.print(" ");
+    // Serial.print(pid2.v);
+    // Serial.print(" ");
+    // Serial.print(pid3.v);
+    // Serial.print(" ");
+    // Serial.println(pid4.v);
     // Serial.print(" ");
     // Serial.print(pid1.e);
     // Serial.print(" ");
@@ -274,12 +274,12 @@ void loop() {
     // dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
     // float u = dummy_sinwave;
     // float Vin = u * 18.0 / 16383;
-    if(flag == 0){
-      Mobile.control(1, 0, 0);
-    }
-    else if(flag == 1){
-      Mobile.control(1, 0, 0);
-    }
+    // if(flag == 0){
+    //   Mobile.control(1, 0, 0);
+    // }
+    // else if(flag == 1){
+    //   Mobile.control(1, 0, 0);
+    // }
     // pid1.setRads(15);
     // pid2.setRads(15);
     // pid3.setRads(15);
