@@ -127,39 +127,13 @@ float u_volt;
 
 float set_point = 0;
 
-struct ControlCmd {
-  int param1;
-  int param2;
-  int param3;
-  unsigned long duration;  // Duration in milliseconds
+struct RadPs {
+  float radps_fl;
+  float radps_fr;
+  float radps_bl;
+  float radps_br;
 };
-
-void runCtrlSeq(ControlCmd cmds[], int numCmds) {
-  static int cmdIndex = 0;
-  static unsigned long startTime = 0;
-  unsigned long current_timestep = micros();
-
-  if (cmdIndex < numCmds) {
-    if (current_timestep - startTime > cmds[cmdIndex].duration * 1000) {
-      // Move to next command
-      cmdIndex++;
-      startTime = current_timestep;
-    }
-
-    if (cmdIndex < numCmds) {
-      // Execute current command
-      Mobile.control(cmds[cmdIndex].param1,
-                     cmds[cmdIndex].param2,
-                     cmds[cmdIndex].param3);
-    }
-  }
-}
-
-ControlCmd commandSeq[] = {
-  { 1, 0, 0, 5000 },   // Command for 5 seconds
-  { 2, 0, 0, 10000 },  // Command for 10 seconds
-                       // Add more commands as needed
-};
+struct RadPs wheel_radps;
 void setup() {
   Serial.begin(230400);
 
@@ -167,7 +141,6 @@ void setup() {
 
   // ledcAttach(MOTOR_1_PWM_PIN, MOTOR_BASE_FREQ, MOTOR_TIMER_14_BIT);
   // pinMode(MOTOR_1_DIR_PIN, OUTPUT);
-
   enc1.begin();
   enc2.begin();
   enc3.begin();
@@ -184,6 +157,12 @@ void setup() {
   kf2.init();
   kf3.init();
   kf4.init();
+  MOTOR_1.setPWM(0);
+  MOTOR_2.setPWM(0);
+  MOTOR_3.setPWM(0);
+  MOTOR_4.setPWM(0);
+  delay(5000);
+
   // pid1.setK(1, 1, 1);
 
   /*-----Setup Hardware End-------*/
@@ -203,6 +182,7 @@ double q1, q2, q3, q4 = 0;
 float qd1, qd2, qd3, qd4;
 float i1, i2, i3, i4;
 
+uint8_t flag = 0;
 void loop() {
 
   //Print loop
@@ -235,7 +215,7 @@ void loop() {
     // Serial.print(" ");
     // Serial.println(qd4);
 
-    // Kinematics::RadPS wheel_radps = kinematics.Inverse_Kinematics(,0,0);
+    // wheel_radps = kinematics.Inverse_Kinematics(,0,0);
     // Serial.print(wheel_radps.radps_fl);
     // Serial.print(" ");
     // Serial.print(wheel_radps.radps_fr);
@@ -294,9 +274,12 @@ void loop() {
     // dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
     // float u = dummy_sinwave;
     // float Vin = u * 18.0 / 16383;
-    //Mobile.control(1, 0, 0);
-    runCtrlSeq(commandSeq, sizeof(commandSeq) / sizeof(ControlCmd));
-
+    if(flag == 0){
+      Mobile.control(1, 0, 0);
+    }
+    else if(flag == 1){
+      Mobile.control(1, 0, 0);
+    }
     // pid1.setRads(15);
     // pid2.setRads(15);
     // pid3.setRads(15);
@@ -340,10 +323,13 @@ void loop() {
     //Serial.println(current_timestep - timestamp);
   }
 
-  // if (current_timestep - timestamp_update > timestep_update) {
-  //   timestamp_update = micros();
-  //   // set_point = abs(set_point - 15);
-  // }
+  if (current_timestep - timestamp_update > 5e6) {
+    timestamp_update = micros();
+    if(flag == 0){
+      flag = 1;
+    }
+    // set_point = abs(set_point - 15);
+  }
 
   /*-----Test PWM Start (0 - 16383)-----*/
   // %duty 0 - 16382

@@ -30,7 +30,7 @@ public:
   int32_t pos_prev = 0;
   float targetRads = 0;  // Renamed from setRads
   float counts_per_rev = 2048 * 4.0;
-  float a = 134.2335958;
+  float a = 13; //134.2335958;
   float PWM_feedforward = 0;
   float i = 0;
 
